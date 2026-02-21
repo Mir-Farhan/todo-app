@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useTodoStore, getFilteredSortedTodos } from '@/stores/todoStore'
 import { SortableTodoItem } from './sortable-todo-item'
+import { TodoItem } from './todo-item'
 import { AddTodoModal } from './add-todo-modal'
 import { FilterBar } from './filter-bar'
 import { Button } from '@/components/ui/button'
@@ -25,10 +26,13 @@ import { Plus } from 'lucide-react'
 import type { Todo } from '@/lib/supabase/types'
 
 export function TodoList() {
-  const { loading, fetchTodos, toggleComplete, deleteTodo, reorderTodos, saveTodoPositions } = useTodoStore()
+  const { todos: allTodos, loading, fetchTodos, toggleComplete, deleteTodo, reorderTodos, saveTodoPositions, sortOption } = useTodoStore()
   const todos = useTodoStore(getFilteredSortedTodos)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
+  
+  // Drag-and-drop only works when sorting by position (manual ordering)
+  const canDragAndDrop = sortOption === 'position' && !loading
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -59,14 +63,19 @@ export function TodoList() {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = todos.findIndex((todo) => todo.id === active.id)
-      const newIndex = todos.findIndex((todo) => todo.id === over.id)
+      const oldIndex = allTodos.findIndex((todo) => todo.id === active.id)
+      const newIndex = allTodos.findIndex((todo) => todo.id === over.id)
 
-      const reorderedTodos = arrayMove(todos, oldIndex, newIndex)
+      const reorderedTodos = arrayMove(allTodos, oldIndex, newIndex)
+      // Update positions in reordered array
+      const updatedTodos = reorderedTodos.map((todo, index) => ({
+        ...todo,
+        position: index
+      }))
       // Update state immediately
-      reorderTodos(reorderedTodos)
+      reorderTodos(updatedTodos)
       // Save positions to database in background
-      saveTodoPositions(reorderedTodos)
+      saveTodoPositions(updatedTodos)
     }
   }
 
@@ -102,7 +111,7 @@ export function TodoList() {
             Create Todo
           </Button>
         </div>
-      ) : (
+      ) : canDragAndDrop ? (
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -122,6 +131,18 @@ export function TodoList() {
             </div>
           </SortableContext>
         </DndContext>
+      ) : (
+        <div className="space-y-4">
+          {todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onToggleComplete={toggleComplete}
+              onDelete={deleteTodo}
+              onEdit={handleEditTodo}
+            />
+          ))}
+        </div>
       )}
 
       <AddTodoModal
