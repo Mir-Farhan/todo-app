@@ -257,9 +257,16 @@ export const useTodoStore = create<TodoState>((set, get) => ({
   setSortOption: (option) => set({ sortOption: option }),
 
   setFilterOptions: (options) =>
-    set((state) => ({
-      filterOptions: { ...state.filterOptions, ...options },
-    })),
+    set((state) => {
+      // If options is empty object, clear all filters
+      if (Object.keys(options).length === 0) {
+        return { filterOptions: {} }
+      }
+      // Otherwise merge with existing filters
+      return {
+        filterOptions: { ...state.filterOptions, ...options },
+      }
+    }),
 
   saveTodoPositions: async (todos: Todo[]) => {
     const { data: user } = await supabase.auth.getUser()
