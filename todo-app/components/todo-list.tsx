@@ -16,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { useTodoStore } from '@/stores/todoStore'
+import { useTodoStore, getFilteredSortedTodos } from '@/stores/todoStore'
 import { SortableTodoItem } from './sortable-todo-item'
 import { AddTodoModal } from './add-todo-modal'
 import { FilterBar } from './filter-bar'
@@ -25,7 +25,8 @@ import { Plus } from 'lucide-react'
 import type { Todo } from '@/lib/supabase/types'
 
 export function TodoList() {
-  const { todos, loading, fetchTodos, toggleComplete, deleteTodo, reorderTodos, saveTodoPositions } = useTodoStore()
+  const { loading, fetchTodos, toggleComplete, deleteTodo, reorderTodos, saveTodoPositions } = useTodoStore()
+  const todos = useTodoStore(getFilteredSortedTodos)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
 

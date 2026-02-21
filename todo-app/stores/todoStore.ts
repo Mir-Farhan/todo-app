@@ -324,7 +324,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 }))
 
 // Computed: Get filtered and sorted todos
-export const getFilteredSortedTodos = (state: TodoState) => {
+export const getFilteredSortedTodos: (state: TodoState) => Todo[] = (state) => {
   let filtered = [...state.todos]
 
   // Apply filters
@@ -350,7 +350,7 @@ export const getFilteredSortedTodos = (state: TodoState) => {
       (t) =>
         t.title.toLowerCase().includes(searchLower) ||
         t.description?.toLowerCase().includes(searchLower)
-    )
+    );
   }
 
   // Apply sorting
