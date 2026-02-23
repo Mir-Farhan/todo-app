@@ -19,7 +19,7 @@ export function PriorityBadge({ priority }: PriorityBadgeProps) {
   const config = PRIORITY_CONFIG[priority]
 
   return (
-    <Badge className={config.color} variant="default">
+    <Badge className={`${config.color} text-white shadow-md`} variant="outline">
       {config.label}
     </Badge>
   )

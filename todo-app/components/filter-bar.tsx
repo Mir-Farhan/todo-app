@@ -154,7 +154,7 @@ export function FilterBar() {
               <Filter className="h-4 w-4" />
               Priority
               {selectedPriorities.length > 0 && (
-                <span className="ml-1 bg-primary-foreground text-primary px-1.5 rounded-full text-xs">
+                <span className="ml-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 rounded-full text-xs shadow-sm">
                   {selectedPriorities.length}
                 </span>
               )}
@@ -188,7 +188,7 @@ export function FilterBar() {
                 <Filter className="h-4 w-4" />
                 Labels
                 {selectedLabels.length > 0 && (
-                  <span className="ml-1 bg-primary-foreground text-primary px-1.5 rounded-full text-xs">
+                  <span className="ml-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-1.5 rounded-full text-xs shadow-sm">
                     {selectedLabels.length}
                   </span>
                 )}
